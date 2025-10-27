@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pemendek Tautan Generator</title>
+<style>
+  body {margin:0;background:#121212;color:#fff;font-family:Poppins,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px;box-sizing:border-box;}
+  h1 {margin:10px 0;font-size:1.5em;}
+  .box {background:#1e1e1e;padding:20px;border-radius:12px;max-width:420px;width:100%;box-shadow:0 0 15px rgba(255,255,255,0.05);}
+  input,button,textarea {width:100%;margin:6px 0;padding:10px;border:none;border-radius:8px;font-size:1em;}
+  input,textarea {background:#2a2a2a;color:#fff;}
+  button {background:#2e7d32;color:#fff;font-weight:bold;cursor:pointer;transition:.2s;}
+  button:hover {background:#43a047;}
+  .link-list {margin-top:10px;font-size:.9em;max-height:200px;overflow-y:auto;background:#181818;padding:10px;border-radius:8px;}
+  .hidden {display:none;}
+  .center {text-align:center;margin-top:30px;color:#bbb;}
+</style>
+</head>
+<body>
+
+<h1>Pemendek Tautan Aman</h1>
+<div class="box" id="formBox">
+  <label>Kode (misal: film1):</label>
+  <input type="text" id="code" placeholder="Masukkan kode unik">
+  <label>Tautan Asli:</label>
+  <textarea id="url" placeholder="Tempel tautan asli di sini"></textarea>
+  <button onclick="addLink()">Tambah Link</button>
+  <button style="background:#0288d1" onclick="generate()">Lihat Kode Redirect</button>
+
+  <div class="link-list" id="linkList"></div>
+</div>
+
+<div class="hidden" id="redirectBox">
+  <div class="box">
+    <h2 id="msg">Mengamankan tautan...</h2>
+    <div id="status" style="margin-top:10px;color:#aaa;">Harap tunggu sebentar.</div>
+  </div>
+</div>
+
+<script>
+let links = {};
+
+function addLink(){
+  const c = document.getElementById("code").value.trim();
+  const u = document.getElementById("url").value.trim();
+  if(!c || !u){alert("Isi kode dan tautan terlebih dahulu.");return;}
+  links[c]=u;
+  updateList();
+  document.getElementById("code").value="";
+  document.getElementById("url").value="";
+}
+
+function updateList(){
+  let listEl=document.getElementById("linkList");
+  listEl.innerHTML="";
+  for(const k in links){
+    listEl.innerHTML+=`<div><b>${k}</b> ➜ ${links[k]}</div>`;
+  }
+}
+
+function generate(){
+  const baseCode = `
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Pemendek Tautan Aman</title><style>body{margin:0;height:100vh;background:#121212;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;flex-direction:column;text-align:center}.box{padding:20px;border:1px solid #333;border-radius:12px;background:#1e1e1e;box-shadow:0 0 20px rgba(255,255,255,0.05)}.loading{margin-top:10px;font-size:.9em;color:#aaa}</style></head><body><div class="box"><h2 id="msg">Mengamankan tautan...</h2><div class="loading" id="status">Harap tunggu sebentar.</div></div><script>const l=${JSON.stringify(links)};const h=location.hash.substring(1),m=document.getElementById("msg"),s=document.getElementById("status");if(h&&l[h]){m.innerText="Mengamankan tautan...";s.innerText="Sedang mempersiapkan pengalihan...";setTimeout(()=>{location.href=l[h]},3e3)}else{m.innerText="Tautan tidak ditemukan!";s.innerText="Periksa kembali kode link di URL."}</script></body></html>`;
+  const blob = new Blob([baseCode], {type: "text/html"});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="redirect.html";
+  a.click();
+  URL.revokeObjectURL(url);
+  alert("✅ redirect.html berhasil dibuat!\nSimpan dan gunakan seperti biasa.");
+}
+</script>
+
+<div class="center">💡 Isi kode + link, klik “Tambah Link”, lalu “Lihat Kode Redirect” untuk membuat file otomatis.</div>
+</body>
+</html>

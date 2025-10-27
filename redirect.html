@@ -1,67 +1,73 @@
 <!DOCTYPE html>
-
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Redirect Aman v1.4 — Pemutar Langsung</title>
+<title>Pemutar Film Aman</title>
 <style>
-body{
-  margin:0;
-  background:#111;
-  color:#eee;
-  font-family:"Poppins",sans-serif;
-  text-align:center;
-  padding:30px;
+body {
+  margin: 0;
+  background: #111;
+  color: #eee;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  padding: 30px;
 }
-h1{color:#00ffc8;margin-bottom:8px;}
-video{
-  width:100%;
-  max-width:700px;
-  border-radius:10px;
-  box-shadow:0 0 20px rgba(0,255,200,0.2);
-  margin-top:20px;
+h1 {
+  color: #00ffc8;
+  margin-bottom: 8px;
 }
-.hidden{display:none;}
-.box{
-  background:#1b1b1b;
-  border:1px solid #333;
-  border-radius:10px;
-  max-width:600px;
-  margin:auto;
-  padding:20px;
-  box-shadow:0 0 15px rgba(255,255,255,0.05);
+video {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+  margin-top: 20px;
 }
-input,textarea{
-  width:90%;
-  background:#222;
-  color:#fff;
-  border:1px solid #444;
-  border-radius:6px;
-  padding:8px;
-  margin:5px 0;
-  font-size:14px;
+.hidden {
+  display: none;
 }
-button{
-  background:#00ffc8;
-  border:none;
-  color:#000;
-  padding:10px 16px;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
-  margin-top:8px;
+.box {
+  background: #1b1b1b;
+  border: 1px solid #333;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
 }
-button:hover{background:#00e6b8;}
-.result-box{
-  background:#181818;
-  border:1px solid #333;
-  margin-top:15px;
-  padding:10px;
-  border-radius:8px;
-  text-align:left;
-  font-family:monospace;
-  word-break:break-all;
+input, textarea {
+  width: 90%;
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px;
+  margin: 5px 0;
+  font-size: 14px;
+}
+button {
+  background: #00ffc8;
+  border: none;
+  color: #000;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 8px;
+}
+button:hover {
+  background: #00e6b8;
+}
+.result-box {
+  background: #181818;
+  border: 1px solid #333;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: left;
+  font-family: monospace;
+  word-break: break-all;
 }
 </style>
 </head>
@@ -99,7 +105,12 @@ function decryptAES(cipher, key) {
 // 🎬 LOGIKA PEMUTAR
 // ======================
 const params = new URLSearchParams(window.location.search);
-const filmCode = [...params.keys()][0];
+let filmCode = [...params.keys()][0];
+
+// Tambahan: agar ?ukiekey tanpa "=" tetap bisa dibaca
+if (window.location.search.includes("ukiekey")) {
+  filmCode = "ukiekey";
+}
 
 if (filmCode && filmCode !== "ukiekey") {
   const found = secureLinks.find(x => x.code === filmCode);
@@ -107,12 +118,12 @@ if (filmCode && filmCode !== "ukiekey") {
     const decrypted = decryptAES(found.data, found.key);
     if (decrypted) {
       document.body.innerHTML = `
-      <h1>🎬 Memutar Film: ${found.code}</h1>
-      <video id="player" controls autoplay></video>
+        <h1>🎬 Memutar Film: ${found.code}</h1>
+        <video id="player" controls autoplay></video>
       `;
       const player = document.getElementById("player");
       player.src = decrypted;
-      player.play().catch(()=>{});
+      player.play().catch(() => {});
     } else {
       document.body.innerHTML = "<h2>❌ Gagal membuka tautan terenkripsi.</h2>";
     }
@@ -122,7 +133,7 @@ if (filmCode && filmCode !== "ukiekey") {
 }
 
 // ======================
-// 🔧 PANEL ADMIN RAHASIA (akses pakai ?ukiekey)
+// 🔧 PANEL ADMIN RAHASIA (?ukiekey)
 // ======================
 if (filmCode === "ukiekey") {
   document.body.innerHTML = `
@@ -131,27 +142,24 @@ if (filmCode === "ukiekey") {
     <p>Gunakan untuk membuat link terenkripsi baru.</p>
     <input type="text" id="filmCode" placeholder="Kode film (misal: film2)">
     <textarea id="filmURL" rows="3" placeholder="Tempel link asli film di sini..."></textarea>
-
-```
-<button onclick="generate()">Enkripsi</button>
-<div id="result" class="result-box hidden"></div>
-```
-
+    <button onclick="generate()">Enkripsi</button>
+    <div id="result" class="result-box hidden"></div>
   </div>
   `;
 }
 
 function generate() {
-const code = document.getElementById("filmCode").value.trim();
-const link = document.getElementById("filmURL").value.trim();
-if (!code || !link) return alert("Isi semua kolom dulu!");
-const randomKey = Math.random().toString(36).substring(2,18);
-const cipher = CryptoJS.AES.encrypt(link, randomKey).toString();
-const result = `{ code: "${code}", key: "${randomKey}", data: "${cipher}" }`;
-const out = document.getElementById("result");
-out.classList.remove("hidden");
-out.innerHTML = "<strong>Hasil:</strong><br><pre>"+result+"</pre>";
-} </script>
+  const code = document.getElementById("filmCode").value.trim();
+  const link = document.getElementById("filmURL").value.trim();
+  if (!code || !link) return alert("Isi semua kolom dulu!");
+  const randomKey = Math.random().toString(36).substring(2, 18);
+  const cipher = CryptoJS.AES.encrypt(link, randomKey).toString();
+  const result = `{ code: "${code}", key: "${randomKey}", data: "${cipher}" }`;
+  const out = document.getElementById("result");
+  out.classList.remove("hidden");
+  out.innerHTML = "<strong>Hasil:</strong><br><pre>" + result + "</pre>";
+}
+</script>
 
 </body>
 </html>

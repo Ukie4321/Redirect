@@ -2,14 +2,103 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mengalihkan...</title>
-<script>
-  // Ganti dengan link asli kamu di sini:
-  window.location.href = "https://drive.google.com/file/d/1aZ0hdN8aOdjYQJY6tVsb8suackr3vAml/preview";
-</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pemendek & Redirect Aman 🔒</title>
+<style>
+body{margin:0;background:#121212;color:#fff;font-family:Poppins,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px;box-sizing:border-box;text-align:center}
+h1{font-size:1.5em;margin-bottom:15px}
+.container{background:#1e1e1e;padding:20px;border-radius:12px;max-width:450px;width:100%;box-shadow:0 0 15px rgba(255,255,255,0.08)}
+input,textarea,button{width:100%;margin:6px 0;padding:10px;border:none;border-radius:8px;font-size:1em;box-sizing:border-box}
+input,textarea{background:#2a2a2a;color:#fff}
+button{background:#0288d1;color:#fff;font-weight:bold;cursor:pointer;transition:.2s}
+button:hover{background:#039be5}
+#result{margin-top:15px;font-size:.9em;word-break:break-all;background:#181818;padding:10px;border-radius:8px;display:none}
+.hidden{display:none}
+</style>
 </head>
-<body style="background:#000;color:#fff;text-align:center;padding-top:20%;">
-  <h2>Mengalihkan ke tautan asli...</h2>
+<body>
+
+<h1>🔒 Pemendek & Redirect Aman</h1>
+<div class="container" id="generator">
+  <label>Kunci Rahasia (ubah sesuka hati):</label>
+  <input type="text" id="key" value="ukie4321">
+
+  <label>Kode Pendek (misal: film1):</label>
+  <input type="text" id="code">
+
+  <label>Tautan Asli (misal: link Google Drive):</label>
+  <textarea id="url"></textarea>
+
+  <button onclick="encryptLink()">🔐 Enkripsi Link</button>
+  <div id="result"></div>
+</div>
+
+<div class="container hidden" id="redirectBox">
+  <h2 id="status">Mengamankan tautan...</h2>
+  <p id="info">Mohon tunggu sebentar...</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+// ====================
+// ✨ ENKRIPSI LINK
+// ====================
+function encryptLink(){
+  const url=document.getElementById("url").value.trim();
+  const key=document.getElementById("key").value.trim();
+  const code=document.getElementById("code").value.trim();
+  if(!url||!key||!code){alert("Isi semua kolom dulu.");return;}
+  const hashKey=CryptoJS.SHA256(key);
+  const encrypted=CryptoJS.AES.encrypt(url, hashKey.toString(CryptoJS.enc.Hex)).toString();
+  const res=document.getElementById("result");
+  res.style.display="block";
+  res.innerHTML=`<b>Kode:</b> ${code}<br><b>Teks Enkripsi:</b><br>${encrypted}<br><br>Tambahkan ke daftar seperti ini:<br><code>"${code}":"${encrypted}"</code>`;
+}
+
+// ====================
+// 🧩 DAFTAR LINK TERENKRIPSI
+// Tambahkan hasil dari generator di atas ke sini.
+// ====================
+const encryptedLinks = {
+  "film1":"U2FsdGVkX1+mxajGQdGpRrSszF0RSwq0mOEzKyyM1H3M7cgRoeGf5yHn6v0Zrk+euQ==",
+  "film2":"U2FsdGVkX19eGZKzPf3Qx4mOa2kRLnEonx5z6N8rE+vM7HUphW=="
+};
+
+// ====================
+// 🚀 REDIRECT OTOMATIS
+// ====================
+function decrypt(text, pass){
+  const key=CryptoJS.SHA256(pass);
+  const bytes=CryptoJS.AES.decrypt(text,key.toString(CryptoJS.enc.Hex));
+  try{return bytes.toString(CryptoJS.enc.Utf8);}catch(e){return "";}
+}
+
+const params=new URLSearchParams(window.location.search);
+const kode=Array.from(params.keys())[0];
+if(kode){
+  document.getElementById("generator").style.display="none";
+  const redirectBox=document.getElementById("redirectBox");
+  redirectBox.classList.remove("hidden");
+  const statusEl=document.getElementById("status");
+  const infoEl=document.getElementById("info");
+  const key=document.getElementById("key").value||"ukie4321";
+  const enc=encryptedLinks[kode];
+  if(enc){
+    const linkAsli=decrypt(enc,key);
+    if(linkAsli){
+      statusEl.innerText="Tautan ditemukan!";
+      infoEl.innerText="Mengalihkan dalam 3 detik...";
+      setTimeout(()=>location.href=linkAsli,3000);
+    }else{
+      statusEl.innerText="Gagal membuka tautan.";
+      infoEl.innerText="Kunci rahasia salah atau link rusak.";
+    }
+  }else{
+    statusEl.innerText="Kode tidak ditemukan.";
+    infoEl.innerText="Gunakan format ?film1 di URL.";
+  }
+}
+</script>
+
 </body>
 </html>

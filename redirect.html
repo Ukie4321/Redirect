@@ -1,304 +1,157 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Redirect Aman v1.3 — ukiekey (Admin hidden)</title>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Redirect Aman v1.4 — Pemutar Langsung</title>
 <style>
-  :root{
-    --bg:#0b0b0d;
-    --card:#0f1113;
-    --muted:#9aa0a6;
-    --accent:#6ad1ff;
-    --glass: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,#050506 0%, #0c0d0e 100%);color:#eaf2f7}
-  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  .card{width:100%;max-width:760px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid var(--glass);padding:22px;border-radius:14px;box-shadow:0 12px 40px rgba(2,6,23,0.7)}
-  .row{display:flex;gap:16px;align-items:center}
-  h1{margin:0;font-size:18px}
-  p.lead{margin:6px 0 14px;color:var(--muted);font-size:13px}
-  .statusBox{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);margin-top:12px}
-  .code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;color:var(--accent);word-break:break-all}
-  .muted{color:var(--muted);font-size:13px}
-  .btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:9px 12px;border-radius:9px;color:var(--muted);cursor:pointer;font-size:13px}
-  .btn.primary{background:linear-gradient(90deg,#05a6ff,#2ee6b6);color:#042b2a;border:none}
-  .btn.ghost{background:transparent}
-  .flex{display:flex;gap:8px;align-items:center}
-  label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
-  input[type="text"], textarea {width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:#0b0c0d;color:#fff;font-size:14px}
-  textarea{min-height:80px;resize:vertical}
-  .adminPanel{margin-top:16px;border-top:1px dashed rgba(255,255,255,0.03);padding-top:14px;display:none}
-  .hint{font-size:12px;color:#87a0a8;margin-top:8px}
-  .small{font-size:12px;color:var(--muted);margin-top:10px}
-  .copyOk{color:#5ee68a}
-  @media (max-width:720px){
-    .row{flex-direction:column;align-items:stretch}
-  }
+body{
+  margin:0;
+  background:#111;
+  color:#eee;
+  font-family:"Poppins",sans-serif;
+  text-align:center;
+  padding:30px;
+}
+h1{color:#00ffc8;margin-bottom:8px;}
+video{
+  width:100%;
+  max-width:700px;
+  border-radius:10px;
+  box-shadow:0 0 20px rgba(0,255,200,0.2);
+  margin-top:20px;
+}
+.hidden{display:none;}
+.box{
+  background:#1b1b1b;
+  border:1px solid #333;
+  border-radius:10px;
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+  box-shadow:0 0 15px rgba(255,255,255,0.05);
+}
+input,textarea{
+  width:90%;
+  background:#222;
+  color:#fff;
+  border:1px solid #444;
+  border-radius:6px;
+  padding:8px;
+  margin:5px 0;
+  font-size:14px;
+}
+button{
+  background:#00ffc8;
+  border:none;
+  color:#000;
+  padding:10px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+  margin-top:8px;
+}
+button:hover{background:#00e6b8;}
+.result-box{
+  background:#181818;
+  border:1px solid #333;
+  margin-top:15px;
+  padding:10px;
+  border-radius:8px;
+  text-align:left;
+  font-family:monospace;
+  word-break:break-all;
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <section class="card" role="main" aria-live="polite">
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <h1>Redirect Aman v1.3</h1>
-        <p class="lead">Halaman redirect terenkripsi. Admin panel tersembunyi: tambahkan <code>?ukiekey</code> pada URL untuk membuka generator enkripsi.</p>
-      </div>
-      <div class="muted" style="text-align:right">
-        <div>Delay: <strong>3 detik</strong></div>
-        <div style="margin-top:6px">Mode: <strong>ENCRYPTED PER-FILM</strong></div>
-      </div>
-    </div>
+<h1>🎬 Pemutar Film Aman</h1>
+<p>Link asli tidak akan terlihat — diputar langsung di sini.</p>
 
-    <div class="statusBox" id="statusBox" aria-live="polite">
-      <div id="publicView">
-        <div id="statusTitle" style="font-weight:600">Menunggu kode...</div>
-        <div id="statusText" class="muted">Untuk menguji redirect, buka URL dengan <code>?kode</code> — mis. <code>?film1</code></div>
-        <div class="small" style="margin-top:10px">Contoh: <code>https://ukie4321.github.io/Redirect/redirect.html?film1</code></div>
-      </div>
-
-      <div id="redirectView" style="display:none">
-        <div id="redirectTitle" style="font-weight:600">Mengamankan tautan...</div>
-        <div id="redirectText" class="muted">Sedang memverifikasi dan menyiapkan pengalihan. Kamu akan diarahkan sebentar lagi.</div>
-        <div style="margin-top:10px" class="muted">Jika tidak dialihkan otomatis, tombol akan muncul.</div>
-        <div style="margin-top:10px" id="openBtnArea"></div>
-      </div>
-    </div>
-
-    <!-- ADMIN PANEL (tersembunyi) -->
-    <div class="adminPanel" id="adminPanel" aria-hidden="true">
-      <h2 style="margin-top:14px">Admin — Generator Enkripsi</h2>
-      <p class="muted">Isi kolom, klik <strong>Generate</strong>. Hasil akan memberi <em>kunci unik</em> & <em>teks enkripsi</em> untuk dimasukkan ke file (paste ke objek <code>secureLinks</code> lalu upload ulang file HTML).</p>
-
-      <label>Kode pendek (contoh: <code>film1</code>)</label>
-      <input type="text" id="g_code" placeholder="film1">
-
-      <label>URL asli (contoh: Google Drive / mp4 / YouTube)</label>
-      <textarea id="g_url" placeholder="https://drive.google.com/…/preview"></textarea>
-
-      <div class="flex" style="margin-top:10px">
-        <button class="btn primary" id="btnGenerate">Generate</button>
-        <button class="btn" id="btnClear">Clear</button>
-        <div style="flex:1"></div>
-        <button class="btn" id="btnHelp">Petunjuk</button>
-      </div>
-
-      <div id="genResult" style="margin-top:12px;display:none">
-        <div class="muted">Hasil (siap copy):</div>
-        <div class="code" id="out_entry" style="margin-top:8px"></div>
-        <div class="hint" style="margin-top:10px">Klik <em>Salin Entry</em> lalu paste ke daftar <code>secureLinks</code> di file HTML (format JSON-style di bawah).</div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn" id="btnCopyEntry">Salin Entry</button>
-          <button class="btn" id="btnCopySnippet">Salin Snippet</button>
-          <div id="copyOk" style="margin-left:8px"></div>
-        </div>
-        <div class="small" style="margin-top:10px">Contoh entry untuk ditempel ke file (masukkan ke array <code>secureLinks</code>):</div>
-        <pre class="code" id="snippet" style="margin-top:8px;padding:10px"></pre>
-      </div>
-    </div>
-
-    <div class="small" style="margin-top:12px">Catatan: Enkripsi & dekripsi dilakukan di browser. **Jangan** publish kunci enkripsi jika tautan harus tetap privat. Setelah kamu menempel entry ke <code>secureLinks</code> dan upload ulang, pengunjung dapat mengakses redirect via <code>?kode</code>.</div>
-
-  </section>
-</div>
-
-<!-- CryptoJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 <script>
-/*
-  Redirect Aman v1.3
-  - Admin trigger: ?ukiekey
-  - secureLinks: array berisi objek {code, key, data}
-  - Proses:
-      1) Pengunjung membuka ?kode => cari secureLinks.find(codigo)
-      2) Jika ada => decrypt data pakai key => redirect (3s)
-  - Admin dapat generate entry pada ?ukiekey (panel muncul hanya untuk admin)
-*/
-
-// ----------------------
-// BEGIN: DATA (kosong - tambahkan secara manual setelah generate)
-// ----------------------
+// ======================
+// 🔐 DAFTAR FILM TERENKRIPSI
+// ======================
 const secureLinks = [
-{
-code: "film1",
-key: "4Bu52RkvRMtLVFKg%!hD^rpkio*3DdQg",
-data: "U2FsdGVkX18Cw+3Lzjcjc21Fry+QefCrroLoEKqI9Mk9h0bLuwBw1aGMvgDRhirRffbx8qFmomI5fbfZraujwcswH39WkHAceEyrtLK4pIg7NVvctKn+jTmuR6Lr8fwfRctJADKAjkvlXPVMPrglmtT2KE7rXl9jZDwD2U1VmXw="}
+  {
+    code: "film1",
+    key: "4Bu52RkvRMtLVFKg%!hD^rpkio*3DdQg",
+    data: "U2FsdGVkX18Cw+3Lzjcjc21Fry+QefCrroLoEKqI9Mk9h0bLuwBw1aGMvgDRhirRffbx8qFmomI5fbfZraujwcswH39WkHAceEyrtLK4pIg7NVvctKn+jTmuR6Lr8fwfRctJADKAjkvlXPVMPrglmtT2KE7rXl9jZDwD2U1VmXw="
+  }
 ];
-// ----------------------
-// END: DATA
-// ----------------------
 
-// Utility: generate random key (secure-ish)
-function randKey(len=32){
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
-  let s="";
-  const r = crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(len)) : null;
-  for(let i=0;i<len;i++){
-    const idx = r ? r[i] % chars.length : Math.floor(Math.random()*chars.length);
-    s += chars.charAt(idx);
-  }
-  return s;
-}
-
-// decrypt using key hashed with SHA256 (compatible with CryptoJS usage below)
-function decryptAES(cipherText, pass){
+// ======================
+// 🔓 FUNGSI DEKRIPSI
+// ======================
+function decryptAES(cipher, key) {
   try {
-    const key = CryptoJS.SHA256(pass);
-    // use key string as hex for passphrase approach used with CryptoJS.AES.encrypt(string, passphrase)
-    const bytes = CryptoJS.AES.decrypt(cipherText, key.toString(CryptoJS.enc.Hex));
-    return bytes.toString(CryptoJS.enc.Utf8) || "";
-  } catch(e){
-    return "";
+    const bytes = CryptoJS.AES.decrypt(cipher, key);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (e) {
+    return null;
   }
 }
 
-// encrypt using same approach (returns string)
-function encryptAES(plainText, pass){
-  const key = CryptoJS.SHA256(pass);
-  return CryptoJS.AES.encrypt(plainText, key.toString(CryptoJS.enc.Hex)).toString();
-}
-
-// ---------- routing & UI ----------
+// ======================
+// 🎬 LOGIKA PEMUTAR
+// ======================
 const params = new URLSearchParams(window.location.search);
-const urlKeys = Array.from(params.keys());
-const firstKey = urlKeys.length ? urlKeys[0] : null;
-const adminTrigger = "ukiekey"; // sesuai permintaanmu
-const isAdmin = (firstKey === adminTrigger);
+const filmCode = [...params.keys()][0];
 
-// Elements
-const statusTitle = document.getElementById("statusTitle");
-const statusText = document.getElementById("statusText");
-const publicView = document.getElementById("publicView");
-const redirectView = document.getElementById("redirectView");
-const adminPanel = document.getElementById("adminPanel");
-const redirectTitle = document.getElementById("redirectTitle");
-const redirectText = document.getElementById("redirectText");
-const openBtnArea = document.getElementById("openBtnArea");
-
-// If admin trigger -> show admin panel (and hide normal UI)
-if(isAdmin){
-  adminPanel.style.display = "block";
-  // hide redirect/public UI to show editor
-  publicView.style.display = "none";
-  redirectView.style.display = "none";
-  // expose admin functions
-  setupAdmin();
-} else if(firstKey){
-  // Public redirect: firstKey is kode film, e.g. ?film1
-  publicView.style.display = "none";
-  redirectView.style.display = "block";
-  handleRedirect(firstKey);
-} else {
-  // No code provided - normal public view remains
-  publicView.style.display = "block";
-}
-
-// Handle redirect for code
-function handleRedirect(code){
-  const item = secureLinks.find(it => it.code === code);
-  if(!item){
-    redirectTitle.innerText = "Tautan tidak ditemukan";
-    redirectText.innerText = "Periksa kembali kode pada URL.";
-    return;
+if (filmCode && filmCode !== "ukiekey") {
+  const found = secureLinks.find(x => x.code === filmCode);
+  if (found) {
+    const decrypted = decryptAES(found.data, found.key);
+    if (decrypted) {
+      document.body.innerHTML = `
+      <h1>🎬 Memutar Film: ${found.code}</h1>
+      <video id="player" controls autoplay></video>
+      `;
+      const player = document.getElementById("player");
+      player.src = decrypted;
+      player.play().catch(()=>{});
+    } else {
+      document.body.innerHTML = "<h2>❌ Gagal membuka tautan terenkripsi.</h2>";
+    }
+  } else {
+    document.body.innerHTML = "<h2>⚠️ Kode film tidak ditemukan.</h2>";
   }
-  // attempt decrypt
-  const plain = decryptAES(item.data, item.key);
-  if(!plain){
-    redirectTitle.innerText = "Gagal membuka tautan";
-    redirectText.innerText = "Data rusak atau kunci salah.";
-    return;
-  }
-  redirectTitle.innerText = "Tautan ditemukan!";
-  redirectText.innerText = "Mengalihkan dalam 3 detik…";
-  // show manual open button in case auto fails
-  openBtnArea.innerHTML = "";
-  const btn = document.createElement("button");
-  btn.className = "btn primary";
-  btn.innerText = "Buka sekarang";
-  btn.onclick = ()=>{ window.location.href = plain; };
-  openBtnArea.appendChild(btn);
-
-  setTimeout(()=>{ window.location.href = plain; }, 3000);
 }
 
-// Admin: setup generator
-function setupAdmin(){
-  const g_code = document.getElementById("g_code");
-  const g_url = document.getElementById("g_url");
-  const btnGenerate = document.getElementById("btnGenerate");
-  const btnClear = document.getElementById("btnClear");
-  const out_entry = document.getElementById("out_entry");
-  const snippet = document.getElementById("snippet");
-  const genResult = document.getElementById("genResult");
-  const btnCopyEntry = document.getElementById("btnCopyEntry");
-  const btnCopySnippet = document.getElementById("btnCopySnippet");
-  const btnHelp = document.getElementById("btnHelp");
-  const copyOk = document.getElementById("copyOk");
+// ======================
+// 🔧 PANEL ADMIN RAHASIA (akses pakai ?ukiekey)
+// ======================
+if (filmCode === "ukiekey") {
+  document.body.innerHTML = `
+  <div class="box">
+    <h2>Panel Admin 🔐</h2>
+    <p>Gunakan untuk membuat link terenkripsi baru.</p>
+    <input type="text" id="filmCode" placeholder="Kode film (misal: film2)">
+    <textarea id="filmURL" rows="3" placeholder="Tempel link asli film di sini..."></textarea>
 
-  btnGenerate.addEventListener('click', ()=>{
-    copyOk.innerText = "";
-    const code = (g_code.value || "").trim();
-    const url = (g_url.value || "").trim();
-    if(!code || !url){
-      alert("Isi kode dan URL asli terlebih dahulu.");
-      return;
-    }
-    // generate unique key & encrypt
-    const key = randKey(32);
-    const data = encryptAES(url, key);
-    const entryObj = { code: code, key: key, data: data };
-    // show entry text to copy
-    out_entry.innerText = JSON.stringify(entryObj);
-    // show snippet to paste into secureLinks array (pretty)
-    snippet.innerText = `{\n  code: "${entryObj.code}",\n  key: "${entryObj.key}",\n  data: "${entryObj.data}"\n},`;
-    genResult.style.display = "block";
-    // scroll to result
-    genResult.scrollIntoView({behavior:"smooth"});
-  });
+```
+<button onclick="generate()">Enkripsi</button>
+<div id="result" class="result-box hidden"></div>
+```
 
-  btnClear.addEventListener('click', ()=>{
-    g_code.value = "";
-    g_url.value = "";
-    document.getElementById("out_entry").innerText = "";
-    document.getElementById("snippet").innerText = "";
-    genResult.style.display = "none";
-    copyOk.innerText = "";
-  });
-
-  btnCopyEntry.addEventListener('click', async ()=>{
-    const t = out_entry.innerText;
-    if(!t) return;
-    try {
-      await navigator.clipboard.writeText(t);
-      copyOk.innerText = "Tersalin ✓";
-      copyOk.className = "copyOk";
-      setTimeout(()=> copyOk.innerText = "", 1800);
-    } catch(e){
-      prompt("Salin manual:", t);
-    }
-  });
-
-  btnCopySnippet.addEventListener('click', async ()=>{
-    const t = snippet.innerText;
-    if(!t) return;
-    try {
-      await navigator.clipboard.writeText(t);
-      copyOk.innerText = "Snippet tersalin ✓";
-      copyOk.className = "copyOk";
-      setTimeout(()=> copyOk.innerText = "", 2000);
-    } catch(e){
-      prompt("Salin manual snippet:", t);
-    }
-  });
-
-  btnHelp.addEventListener('click', ()=>{
-    alert("Langkah cepat:\n1) Isi Kode (mis: film1) + URL asli\n2) Klik Generate\n3) Klik 'Salin Snippet' lalu paste hasil ke array secureLinks dalam file HTML\n4) Simpan & upload ulang file redirect.html ke GitHub\n5) Uji: buka redirect.html?film1");
-  });
+  </div>
+  `;
 }
-</script>
+
+function generate() {
+const code = document.getElementById("filmCode").value.trim();
+const link = document.getElementById("filmURL").value.trim();
+if (!code || !link) return alert("Isi semua kolom dulu!");
+const randomKey = Math.random().toString(36).substring(2,18);
+const cipher = CryptoJS.AES.encrypt(link, randomKey).toString();
+const result = `{ code: "${code}", key: "${randomKey}", data: "${cipher}" }`;
+const out = document.getElementById("result");
+out.classList.remove("hidden");
+out.innerHTML = "<strong>Hasil:</strong><br><pre>"+result+"</pre>";
+} </script>
+
 </body>
 </html>
